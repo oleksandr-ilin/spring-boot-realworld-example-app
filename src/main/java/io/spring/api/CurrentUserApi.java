@@ -7,8 +7,7 @@ import io.spring.application.data.UserWithToken;
 import io.spring.application.data.UserData;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,37 +39,29 @@ public class CurrentUserApi {
 
     @GetMapping
     public ResponseEntity currentUser(@AuthenticationPrincipal User currentUser,
-                                      @RequestHeader(value = "Authorization") String authorization) {
+            @RequestHeader(value = "Authorization") String authorization) {
         UserData userData = userQueryService.findById(currentUser.getId()).get();
-        return ResponseEntity.ok(userResponse(
-            new UserWithToken(userData, authorization.split(" ")[1])
-        ));
+        return ResponseEntity.ok(userResponse(new UserWithToken(userData, authorization.split(" ")[1])));
     }
 
     @PutMapping
     public ResponseEntity updateProfile(@AuthenticationPrincipal User currentUser,
-                                        @RequestHeader("Authorization") String token,
-                                        @Valid @RequestBody UpdateUserParam updateUserParam,
-                                        BindingResult bindingResult) {
+            @RequestHeader("Authorization") String token, @Valid @RequestBody UpdateUserParam updateUserParam,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestException(bindingResult);
         }
         checkUniquenessOfUsernameAndEmail(currentUser, updateUserParam, bindingResult);
 
-        currentUser.update(
-            updateUserParam.getEmail(),
-            updateUserParam.getUsername(),
-            updateUserParam.getPassword(),
-            updateUserParam.getBio(),
-            updateUserParam.getImage());
+        currentUser.update(updateUserParam.getEmail(), updateUserParam.getUsername(), updateUserParam.getPassword(),
+                updateUserParam.getBio(), updateUserParam.getImage());
         userRepository.save(currentUser);
         UserData userData = userQueryService.findById(currentUser.getId()).get();
-        return ResponseEntity.ok(userResponse(
-            new UserWithToken(userData, token.split(" ")[1])
-        ));
+        return ResponseEntity.ok(userResponse(new UserWithToken(userData, token.split(" ")[1])));
     }
 
-    private void checkUniquenessOfUsernameAndEmail(User currentUser, UpdateUserParam updateUserParam, BindingResult bindingResult) {
+    private void checkUniquenessOfUsernameAndEmail(User currentUser, UpdateUserParam updateUserParam,
+            BindingResult bindingResult) {
         if (!"".equals(updateUserParam.getUsername())) {
             Optional<User> byUsername = userRepository.findByUsername(updateUserParam.getUsername());
             if (byUsername.isPresent() && !byUsername.get().equals(currentUser)) {
@@ -91,15 +82,15 @@ public class CurrentUserApi {
     }
 
     private Map<String, Object> userResponse(UserWithToken userWithToken) {
-        return new HashMap<String, Object>() {{
-            put("user", userWithToken);
-        }};
+        return new HashMap<String, Object>() {
+            {
+                put("user", userWithToken);
+            }
+        };
     }
 }
 
-@Getter
 @JsonRootName("user")
-@NoArgsConstructor
 class UpdateUserParam {
     @Email(message = "should be an email")
     private String email = "";
@@ -107,4 +98,60 @@ class UpdateUserParam {
     private String username = "";
     private String bio = "";
     private String image = "";
+
+    public UpdateUserParam() {
+        
+    }
+
+    public UpdateUserParam(String username, String password, String email, String bio, String image) {
+        this.bio = bio;
+        this.email = email;
+
+        this.image = image;
+
+        this.username = username;
+
+        this.password = password;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }

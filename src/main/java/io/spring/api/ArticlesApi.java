@@ -7,8 +7,6 @@ import io.spring.application.ArticleQueryService;
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
 import io.spring.core.user.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,45 +36,39 @@ public class ArticlesApi {
 
     @PostMapping
     public ResponseEntity createArticle(@Valid @RequestBody NewArticleParam newArticleParam,
-                                        BindingResult bindingResult,
-                                        @AuthenticationPrincipal User user) {
+            BindingResult bindingResult, @AuthenticationPrincipal User user) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestException(bindingResult);
         }
 
-        Article article = new Article(
-            newArticleParam.getTitle(),
-            newArticleParam.getDescription(),
-            newArticleParam.getBody(),
-            newArticleParam.getTagList(),
-            user.getId());
+        Article article = new Article(newArticleParam.getTitle(), newArticleParam.getDescription(),
+                newArticleParam.getBody(), newArticleParam.getTagList(), user.getId());
         articleRepository.save(article);
-        return ResponseEntity.ok(new HashMap<String, Object>() {{
-            put("article", articleQueryService.findById(article.getId(), user).get());
-        }});
+        return ResponseEntity.ok(new HashMap<String, Object>() {
+            {
+                put("article", articleQueryService.findById(article.getId(), user).get());
+            }
+        });
     }
 
     @GetMapping(path = "feed")
     public ResponseEntity getFeed(@RequestParam(value = "offset", defaultValue = "0") int offset,
-                                  @RequestParam(value = "limit", defaultValue = "20") int limit,
-                                  @AuthenticationPrincipal User user) {
+            @RequestParam(value = "limit", defaultValue = "20") int limit, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(articleQueryService.findUserFeed(user, new Page(offset, limit)));
     }
 
     @GetMapping
     public ResponseEntity getArticles(@RequestParam(value = "offset", defaultValue = "0") int offset,
-                                      @RequestParam(value = "limit", defaultValue = "20") int limit,
-                                      @RequestParam(value = "tag", required = false) String tag,
-                                      @RequestParam(value = "favorited", required = false) String favoritedBy,
-                                      @RequestParam(value = "author", required = false) String author,
-                                      @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(articleQueryService.findRecentArticles(tag, author, favoritedBy, new Page(offset, limit), user));
+            @RequestParam(value = "limit", defaultValue = "20") int limit,
+            @RequestParam(value = "tag", required = false) String tag,
+            @RequestParam(value = "favorited", required = false) String favoritedBy,
+            @RequestParam(value = "author", required = false) String author, @AuthenticationPrincipal User user) {
+        return ResponseEntity
+                .ok(articleQueryService.findRecentArticles(tag, author, favoritedBy, new Page(offset, limit), user));
     }
 }
 
-@Getter
 @JsonRootName("article")
-@NoArgsConstructor
 class NewArticleParam {
     @NotBlank(message = "can't be empty")
     private String title;
@@ -85,4 +77,46 @@ class NewArticleParam {
     @NotBlank(message = "can't be empty")
     private String body;
     private String[] tagList;
+
+    public NewArticleParam(String body, String description, String title, String[] tagList) {
+        this.body = body;
+
+        this.description = description;
+
+        this.title = title;
+
+        this.tagList = tagList;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String[] getTagList() {
+        return tagList;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setTagList(String[] tagList) {
+        this.tagList = tagList;
+    }
 }

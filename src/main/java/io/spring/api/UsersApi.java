@@ -9,8 +9,6 @@ import io.spring.core.service.JwtService;
 import io.spring.core.user.EncryptService;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,20 +98,31 @@ public class UsersApi {
     }
 }
 
-@Getter
 @JsonRootName("user")
-@NoArgsConstructor
 class LoginParam {
     @NotBlank(message = "can't be empty")
     @Email(message = "should be an email")
     private String email;
     @NotBlank(message = "can't be empty")
     private String password;
+
+    public LoginParam() {
+
+
+    }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
 
-@Getter
+
 @JsonRootName("user")
-@NoArgsConstructor
 class RegisterParam {
     @NotBlank(message = "can't be empty")
     @Email(message = "should be an email")
@@ -122,4 +131,20 @@ class RegisterParam {
     private String username;
     @NotBlank(message = "can't be empty")
     private String password;
+
+    public RegisterParam() {
+
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
 }

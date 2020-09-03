@@ -12,8 +12,6 @@ import io.spring.core.article.ArticleRepository;
 import io.spring.core.comment.Comment;
 import io.spring.core.comment.CommentRepository;
 import io.spring.core.user.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,42 +38,40 @@ public class CommentsApi {
     private CommentQueryService commentQueryService;
 
     @Autowired
-    public CommentsApi(ArticleRepository articleRepository,
-                       CommentRepository commentRepository,
-                       CommentQueryService commentQueryService) {
+    public CommentsApi(ArticleRepository articleRepository, CommentRepository commentRepository,
+            CommentQueryService commentQueryService) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
         this.commentQueryService = commentQueryService;
     }
 
     @PostMapping
-    public ResponseEntity<?> createComment(@PathVariable("slug") String slug,
-                                                     @AuthenticationPrincipal User user,
-                                                     @Valid @RequestBody NewCommentParam newCommentParam,
-                                                     BindingResult bindingResult) {
+    public ResponseEntity<?> createComment(@PathVariable("slug") String slug, @AuthenticationPrincipal User user,
+            @Valid @RequestBody NewCommentParam newCommentParam, BindingResult bindingResult) {
         Article article = findArticle(slug);
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestException(bindingResult);
         }
         Comment comment = new Comment(newCommentParam.getBody(), user.getId(), article.getId());
         commentRepository.save(comment);
-        return ResponseEntity.status(201).body(commentResponse(commentQueryService.findById(comment.getId(), user).get()));
+        return ResponseEntity.status(201)
+                .body(commentResponse(commentQueryService.findById(comment.getId(), user).get()));
     }
 
     @GetMapping
-    public ResponseEntity getComments(@PathVariable("slug") String slug,
-                                      @AuthenticationPrincipal User user) {
+    public ResponseEntity getComments(@PathVariable("slug") String slug, @AuthenticationPrincipal User user) {
         Article article = findArticle(slug);
         List<CommentData> comments = commentQueryService.findByArticleId(article.getId(), user);
-        return ResponseEntity.ok(new HashMap<String, Object>() {{
-            put("comments", comments);
-        }});
+        return ResponseEntity.ok(new HashMap<String, Object>() {
+            {
+                put("comments", comments);
+            }
+        });
     }
 
     @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteComment(@PathVariable("slug") String slug,
-                                        @PathVariable("id") String commentId,
-                                        @AuthenticationPrincipal User user) {
+    public ResponseEntity deleteComment(@PathVariable("slug") String slug, @PathVariable("id") String commentId,
+            @AuthenticationPrincipal User user) {
         Article article = findArticle(slug);
         return commentRepository.findById(article.getId(), commentId).map(comment -> {
             if (!AuthorizationService.canWriteComment(user, article, comment)) {
@@ -91,16 +87,33 @@ public class CommentsApi {
     }
 
     private Map<String, Object> commentResponse(CommentData commentData) {
-        return new HashMap<String, Object>() {{
-            put("comment", commentData);
-        }};
+        return new HashMap<String, Object>() {
+            {
+                put("comment", commentData);
+            }
+        };
     }
 }
 
-@Getter
-@NoArgsConstructor
 @JsonRootName("comment")
 class NewCommentParam {
     @NotBlank(message = "can't be empty")
     private String body;
+
+
+     public NewCommentParam(){
+         
+     }
+
+    public NewCommentParam(String body) {
+        this.body = body;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
 }

@@ -1,16 +1,14 @@
 package io.spring.application;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
-@Data
-@Getter
 public class Page {
     private static final int MAX_LIMIT = 100;
     private int offset = 0;
     private int limit = 20;
+
+    public Page() {
+    }
+
+
 
     public Page(int offset, int limit) {
         setOffset(offset);
@@ -30,4 +28,13 @@ public class Page {
             this.limit = limit;
         }
     }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
 }

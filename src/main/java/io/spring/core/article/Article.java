@@ -1,8 +1,5 @@
 package io.spring.core.article;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 
 import java.util.Arrays;
@@ -12,9 +9,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-@Getter
-@NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
+
 public class Article {
     private String userId;
     private String id;
@@ -25,6 +20,10 @@ public class Article {
     private List<Tag> tags;
     private DateTime createdAt;
     private DateTime updatedAt;
+
+    public Article() {
+
+    }
 
     public Article(String title, String description, String body, String[] tagList, String userId) {
         this(title, description, body, tagList, userId, new DateTime());
@@ -58,5 +57,56 @@ public class Article {
 
     private String toSlug(String title) {
         return title.toLowerCase().replaceAll("[\\&|[\\uFE30-\\uFFA0]|\\’|\\”|\\s\\?\\,\\.]+", "-");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Article) {
+            return this.id.equals(((Article) obj).id);
+        }
+        return super.equals(obj);
+    }
+
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public DateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public DateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 }

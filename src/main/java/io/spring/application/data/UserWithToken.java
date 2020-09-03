@@ -1,8 +1,6 @@
 package io.spring.application.data;
 
-import lombok.Getter;
 
-@Getter
 public class UserWithToken {
     private String email;
     private String username;
@@ -17,5 +15,31 @@ public class UserWithToken {
         this.image = userData.getImage();
         this.token = token;
     }
+
+    public UserWithToken() {
+
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+
 
 }

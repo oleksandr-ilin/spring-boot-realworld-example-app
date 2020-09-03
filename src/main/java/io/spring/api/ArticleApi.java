@@ -8,8 +8,6 @@ import io.spring.application.data.ArticleData;
 import io.spring.application.ArticleQueryService;
 import io.spring.core.article.ArticleRepository;
 import io.spring.core.user.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -81,11 +79,26 @@ public class ArticleApi {
     }
 }
 
-@Getter
-@NoArgsConstructor
+
 @JsonRootName("article")
 class UpdateArticleParam {
     private String title = "";
     private String body = "";
     private String description = "";
+
+    public UpdateArticleParam() {
+
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }

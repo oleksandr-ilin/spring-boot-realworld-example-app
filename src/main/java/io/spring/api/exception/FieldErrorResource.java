@@ -1,10 +1,9 @@
 package io.spring.api.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
 public class FieldErrorResource {
     private String resource;
     private String field;
@@ -18,4 +17,22 @@ public class FieldErrorResource {
         this.code = code;
         this.message = message;
     }
+
+    public String getResource() {
+        return resource;
+    }
+
+
+    public String getField() {
+        return field;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
 }
